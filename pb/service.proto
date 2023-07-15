@@ -1,0 +1,102 @@
+syntax = "proto3";
+
+option go_package = ".";
+
+package pb;
+
+service MyService {
+  rpc MyMethod(Request) returns (Response);
+  rpc CreateUser(CreateUserRequest) returns (CreateUserResponse) {}
+  rpc CreateUserWithOtp(CreateUserWithOtpRequest) returns(CreateUserWithOtpResponse) {}
+  rpc SignupOtpValidation(OtpValidationRequest)returns(OtpValidationResponse) {}
+  rpc LoginWithOtp(LoginWithOtpRequest)returns(LoginWithOtpResponse){}
+  rpc LoginOtpValidation(OtpValidationRequest)returns(LoginOtpValidationResponse){}
+  rpc LoginWithPassword(LoginWithPasswordRequest)returns(LoginWithPasswordResponse){}
+  rpc RegisterAdmin(RegisterAdminRequest)returns(RegisterAdminResponse){}
+  rpc AdminLoginWithPassword(LoginWithPasswordRequest)returns(LoginWithPasswordResponse){}
+  
+}
+
+message Request {
+  string data = 1;
+}
+
+message Response {
+  string result = 1;
+}
+
+message CreateUserRequest{
+  string firstName = 1;
+  string lastName  = 2;
+  string email     = 3;
+  string phone     = 4;
+  string password  = 5;
+}
+
+message CreateUserResponse {
+  string firstname = 1;
+  string email     = 2;
+  string result    = 3;
+}
+
+message CreateUserWithOtpRequest{
+  string firstname = 1;
+  string lastname  = 2;
+  string email     = 3;
+  string phone     = 4;
+  string password  = 5;
+}
+
+message CreateUserWithOtpResponse{
+    string phone = 1;
+    string key   = 2;
+    string result= 3;
+}
+
+message OtpValidationRequest{
+    string key = 1;
+    string otp = 2;
+}
+
+message OtpValidationResponse{
+    string result = 1;
+}
+
+
+message LoginWithOtpRequest{
+    string phone = 1;
+}
+
+message LoginWithOtpResponse{
+    string key    = 1;
+    string result = 2;
+    string phone  = 3;
+}
+
+message LoginOtpValidationResponse{
+    int32 userid = 1;
+    string result = 2;
+}
+
+message LoginWithPasswordRequest{
+    string phone = 1;
+    string password = 2;
+}
+
+message LoginWithPasswordResponse{
+    int32 userid = 1;
+    string result = 2;
+}
+
+message RegisterAdminRequest{
+   string adminname = 1;
+   string email     = 2;
+   string phone     = 3;
+   string password  = 4;
+   string role      = 5;
+}
+
+message RegisterAdminResponse{
+    int32 userid = 1;
+    string result = 2;
+}
