@@ -21,7 +21,8 @@ func init() {
 
 func GetByEmail(email string) (*entity.User, error) {
 	var user entity.User
-	result := DB.Where(&entity.User{Email: email}).First(&user)
+	query := "SELECT * FROM users WHERE email = ?"
+	result := DB.Raw(query, email).Scan(&user)
 	if result.Error != nil {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 			return nil, nil
@@ -32,7 +33,8 @@ func GetByEmail(email string) (*entity.User, error) {
 }
 func GetByPhone(phone string) (*entity.User, error) {
 	var user entity.User
-	result := DB.Where(&entity.User{Phone: phone}).First(&user)
+	query := "SELECT * FROM users WHERE phone = ?"
+	result := DB.Raw(query, phone).Scan(&user)
 	if result.Error != nil {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 			return nil, nil
@@ -43,7 +45,8 @@ func GetByPhone(phone string) (*entity.User, error) {
 }
 
 func Create(user *entity.User) error {
-	return DB.Create(user).Error
+	query := "INSERT INTO users (first_name, last_name, email, phone, password) VALUES (?, ?, ?, ?, ?)"
+	return DB.Exec(query, user.FirstName, user.LastName, user.Email, user.Phone, user.Password).Error
 }
 
 func CreateSignup(user *entity.Signup) error {

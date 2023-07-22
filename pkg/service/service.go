@@ -26,18 +26,19 @@ func (s *MyService) MyMethod(ctx context.Context, req *pb.Request) (*pb.Response
 
 func (s *MyService) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (*pb.CreateUserResponse, error) {
 	log.Println("Microservice1: CreateUser called")
-	email, err := repo.GetByEmail(req.Email)
+	user, err := repo.GetByEmail(req.Email)
 	if err != nil {
 		return nil, errors.New("error with server")
 	}
-	if email != nil {
+	if user.Email == req.Email {
 		return nil, errors.New("user with this email already exists")
 	}
-	phone, err := repo.GetByPhone(req.Phone)
+
+	user, err = repo.GetByPhone(req.Phone)
 	if err != nil {
 		return nil, errors.New("error with server")
 	}
-	if phone != nil {
+	if user.Phone == req.Phone {
 		return nil, errors.New("user with this phone no already exists")
 	}
 
@@ -65,18 +66,18 @@ func (s *MyService) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (
 
 func (s *MyService) CreateUserWithOtp(ctx context.Context, req *pb.CreateUserWithOtpRequest) (*pb.CreateUserWithOtpResponse, error) {
 	var otpKey entity.OtpKey
-	email, err := repo.GetByEmail(req.Email)
+	user, err := repo.GetByEmail(req.Email)
 	if err != nil {
 		return nil, errors.New("error with server")
 	}
-	if email != nil {
+	if user.Email == req.Email {
 		return nil, errors.New("user with this email already exists")
 	}
-	phone, err := repo.GetByPhone(req.Phone)
+	user, err = repo.GetByPhone(req.Phone)
 	if err != nil {
 		return nil, errors.New("error with server")
 	}
-	if phone != nil {
+	if user.Phone == req.Phone {
 		return nil, errors.New("user with this phone no already exists")
 	}
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
@@ -139,7 +140,7 @@ func (s *MyService) LoginWithOtp(ctx context.Context, req *pb.LoginWithOtpReques
 	if err != nil {
 		return nil, err
 	}
-	if result == nil {
+	if result.Phone == "" {
 		return nil, errors.New("user with this phone not found")
 	}
 	permission, err := repo.CheckPermission(result)
@@ -185,7 +186,7 @@ func (s *MyService) LoginWithPassword(ctx context.Context, req *pb.LoginWithPass
 	if err != nil {
 		return nil, err
 	}
-	if user == nil {
+	if user.Phone == "" {
 		return nil, errors.New("user with this phone not found")
 	}
 	permission, err := repo.CheckPermission(user)
@@ -202,18 +203,18 @@ func (s *MyService) LoginWithPassword(ctx context.Context, req *pb.LoginWithPass
 }
 
 func (s *MyService) RegisterAdmin(ctx context.Context, req *pb.RegisterAdminRequest) (*pb.RegisterAdminResponse, error) {
-	email, err := repo.GetByEmail(req.Email)
+	admin, err := repo.GetByEmail(req.Email)
 	if err != nil {
 		return nil, err
 	}
-	if email != nil {
+	if admin.Email == req.Email {
 		return nil, errors.New("admin with this email already exists")
 	}
-	phone, err := repo.GetByPhone(req.Phone)
+	admin, err = repo.GetByPhone(req.Phone)
 	if err != nil {
 		return nil, err
 	}
-	if phone != nil {
+	if admin.Phone == req.Phone {
 		return nil, errors.New("admin with this phone already exists")
 	}
 
@@ -245,7 +246,7 @@ func (s *MyService) AdminLoginWithPassword(ctx context.Context, req *pb.LoginWit
 	if err != nil {
 		return nil, err
 	}
-	if admin == nil {
+	if admin.Phone == "" {
 		return nil, errors.New("admin with this phone not found")
 	}
 	if err := bcrypt.CompareHashAndPassword([]byte(admin.Password), []byte(req.Password)); err != nil {
