@@ -31,9 +31,34 @@ func GetByEmail(email string) (*entity.User, error) {
 	}
 	return &user, nil
 }
+func AdminGetByEmail(email string) (*entity.Admin, error) {
+	var user entity.Admin
+	query := "SELECT * FROM admins WHERE email = ?"
+	result := DB.Raw(query, email).Scan(&user)
+	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
+		return nil, result.Error
+	}
+	return &user, nil
+}
 func GetByPhone(phone string) (*entity.User, error) {
 	var user entity.User
 	query := "SELECT * FROM users WHERE phone = ?"
+	result := DB.Raw(query, phone).Scan(&user)
+	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
+		return nil, result.Error
+	}
+	return &user, nil
+}
+
+func AdminGetByPhone(phone string) (*entity.Admin, error) {
+	var user entity.Admin
+	query := "SELECT * FROM admins WHERE phone = ?"
 	result := DB.Raw(query, phone).Scan(&user)
 	if result.Error != nil {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
@@ -103,25 +128,25 @@ func AdminCreate(admin *entity.Admin) error {
 	return DB.Create(admin).Error
 }
 
-func AdminGetByPhone(phone string) (*entity.Admin, error) {
-	var admin entity.Admin
-	result := DB.Where(&entity.Admin{Phone: phone}).First(&admin)
-	if result.Error != nil {
-		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-			return nil, nil
-		}
-		return nil, result.Error
-	}
-	return &admin, nil
-}
-func AdminGetByEmail(email string) (*entity.Admin, error) {
-	var admin entity.Admin
-	result := DB.Where(&entity.Admin{Email: email}).First(&admin)
-	if result.Error != nil {
-		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-			return nil, nil
-		}
-		return nil, result.Error
-	}
-	return &admin, nil
-}
+// func AdminGetByPhone(phone string) (*entity.Admin, error) {
+// 	var admin entity.Admin
+// 	result := DB.Where(&entity.Admin{Phone: phone}).First(&admin)
+// 	if result.Error != nil {
+// 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+// 			return nil, nil
+// 		}
+// 		return nil, result.Error
+// 	}
+// 	return &admin, nil
+// }
+// func AdminGetByEmail(email string) (*entity.Admin, error) {
+// 	var admin entity.Admin
+// 	result := DB.Where(&entity.Admin{Email: email}).First(&admin)
+// 	if result.Error != nil {
+// 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+// 			return nil, nil
+// 		}
+// 		return nil, result.Error
+// 	}
+// 	return &admin, nil
+// }
