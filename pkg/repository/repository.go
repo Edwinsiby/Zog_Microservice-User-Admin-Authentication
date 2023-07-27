@@ -44,6 +44,19 @@ func GetByPhone(phone string) (*entity.User, error) {
 	return &user, nil
 }
 
+func AdminGetByPhone(phone string) (*entity.Admin, error) {
+	var admin entity.Admin
+	query := "SELECT * FROM users WHERE phone = ?"
+	result := DB.Raw(query, phone).Scan(&admin)
+	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
+		return nil, result.Error
+	}
+	return &admin, nil
+}
+
 func Create(user *entity.User) error {
 	query := "INSERT INTO users (first_name, last_name, email, phone, password) VALUES (?, ?, ?, ?, ?)"
 	return DB.Exec(query, user.FirstName, user.LastName, user.Email, user.Phone, user.Password).Error
@@ -103,17 +116,17 @@ func AdminCreate(admin *entity.Admin) error {
 	return DB.Create(admin).Error
 }
 
-func AdminGetByPhone(phone string) (*entity.Admin, error) {
-	var admin entity.Admin
-	result := DB.Where(&entity.Admin{Phone: phone}).First(&admin)
-	if result.Error != nil {
-		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-			return nil, nil
-		}
-		return nil, result.Error
-	}
-	return &admin, nil
-}
+//	func AdminGetByPhone(phone string) (*entity.Admin, error) {
+//		var admin entity.Admin
+//		result := DB.Where(&entity.Admin{Phone: phone}).First(&admin)
+//		if result.Error != nil {
+//			if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+//				return nil, nil
+//			}
+//			return nil, result.Error
+//		}
+//		return &admin, nil
+//	}
 func AdminGetByEmail(email string) (*entity.Admin, error) {
 	var admin entity.Admin
 	result := DB.Where(&entity.Admin{Email: email}).First(&admin)

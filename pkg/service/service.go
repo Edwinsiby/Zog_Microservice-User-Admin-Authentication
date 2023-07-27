@@ -203,14 +203,14 @@ func (s *MyService) LoginWithPassword(ctx context.Context, req *pb.LoginWithPass
 }
 
 func (s *MyService) RegisterAdmin(ctx context.Context, req *pb.RegisterAdminRequest) (*pb.RegisterAdminResponse, error) {
-	admin, err := repo.GetByEmail(req.Email)
+	admin, err := repo.AdminGetByEmail(req.Email)
 	if err != nil {
 		return nil, err
 	}
 	if admin.Email == req.Email {
 		return nil, errors.New("admin with this email already exists")
 	}
-	admin, err = repo.GetByPhone(req.Phone)
+	admin, err = repo.AdminGetByPhone(req.Phone)
 	if err != nil {
 		return nil, err
 	}
@@ -237,12 +237,12 @@ func (s *MyService) RegisterAdmin(ctx context.Context, req *pb.RegisterAdminRequ
 	} else {
 
 	}
-	result := "user loged in succesfuly and cookie stored"
+	result := "Admin creation success"
 	return &pb.RegisterAdminResponse{Result: result}, nil
 }
 
 func (s *MyService) AdminLoginWithPassword(ctx context.Context, req *pb.LoginWithPasswordRequest) (*pb.LoginWithPasswordResponse, error) {
-	admin, err := repo.GetByPhone(req.Phone)
+	admin, err := repo.AdminGetByPhone(req.Phone)
 	if err != nil {
 		return nil, err
 	}
@@ -252,7 +252,7 @@ func (s *MyService) AdminLoginWithPassword(ctx context.Context, req *pb.LoginWit
 	if err := bcrypt.CompareHashAndPassword([]byte(admin.Password), []byte(req.Password)); err != nil {
 		return nil, errors.New("Invalid Password")
 	} else {
-		result := "user loged in succesfuly and cookie stored"
+		result := "admin loged in succesfuly and cookie stored"
 		return &pb.LoginWithPasswordResponse{Userid: int32(admin.ID), Result: result}, nil
 	}
 }
